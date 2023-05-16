@@ -7,31 +7,31 @@ using Training.Models;
 
 namespace Training
 {
-        public class Database
+    public class Database
+    {
+        MongoClient dbClient = new MongoClient();
+        private IMongoDatabase GetDb()
         {
-            MongoClient dbClient = new MongoClient();
-            private IMongoDatabase GetDb()
-            {
-                return dbClient.GetDatabase("ovningDB");
-
-            }
-            public async Task<List<Ovning>> GetOvningarAsync()
-            {
-                return await GetDb().GetCollection<Ovning>("Exercise")
-                    .Find(o => true)
-                    .ToListAsync();
+            return dbClient.GetDatabase("ovningDB");
 
         }
-          
+        public async Task<List<Ovning>> GetOvningarAsync()
+        {
+            return await GetDb().GetCollection<Ovning>("Exercise")
+                .Find(o => true)
+                .ToListAsync();
 
-    public async Task SaveExercise(Ovning ovning)
+        }
+
+
+        public async Task SaveExercise(Ovning ovning)
         {
             await GetDb().GetCollection<Ovning>("Exercise")
                  .InsertOneAsync(ovning);
         }
-        public async Task<Ovning> GetOvning(string id)
+        public async Task<Ovning> GetOvning(string Id)
         {
-            ObjectId _id = new ObjectId(id);
+            ObjectId _id = new ObjectId(Id);
             var ovning = await GetDb().GetCollection<Ovning>("Exercise")
                 .Find(o => o.Id == _id)
                 .SingleOrDefaultAsync();
@@ -52,9 +52,25 @@ namespace Training
         }
 
 
+        public async Task<Ovning> GetExerciseById(string id)
+        {
+            ObjectId _id = new ObjectId(id);
+            var exercise = await GetDb().GetCollection<Ovning>("Exercise")
+                .Find(e => e.Id == _id)
+                .SingleOrDefaultAsync();
+            return exercise;
 
-     
+        }
+
+
+        public async Task DeleteExercise(string id)
+        {
+            ObjectId _id = new ObjectId(id);
+            await GetDb().GetCollection<Ovning>("Exercise")
+                .DeleteOneAsync(e => e.Id == _id);
+        }
+
+
 
     }
 }
-    

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Training.Models;
 
 namespace Training.Controllers
@@ -8,14 +9,24 @@ namespace Training.Controllers
        
             public async Task<IActionResult> Index()
             {
+            
                 Database db = new Database();
-                var mytraining = await db.GetTrainingsAsync();
+            var mytraining = await db.GetTrainingsAsync(); 
+            
                 return View(mytraining);
+           
             }
         public async Task<IActionResult> Create()
         {
-            return View();
-        }
+            Database db = new Database();
+            var exercises = await db.GetOvningarAsync();
+            var viewModel = new CreateTrainingViewModel()
+            {
+                Exercises = exercises,
+            };
+            return View(viewModel);
+
+                }
 
         [HttpPost]
         public async Task<IActionResult> Create(MyTrainings training)
@@ -24,6 +35,8 @@ namespace Training.Controllers
             await db.SaveTraining(training);
             return Redirect("/Training");
         }
+
+       
 
 
     }
